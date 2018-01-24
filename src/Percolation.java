@@ -72,4 +72,9 @@ public class Percolation
 			throw new IndexOutOfBoundsException("");
 		}
 	}
+	
+	public int numberOfOpenSites()
+	{
+		return 0;
+	}
 }
