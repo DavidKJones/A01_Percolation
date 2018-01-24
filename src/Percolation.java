@@ -43,7 +43,7 @@ public class Percolation
 	//is site (row i, column j) open?
 	public boolean isOpen(int i, int j)
 	{
-		return sitesState[i][j] == SiteState.BLOCK;
+		return sitesState[i][j] != SiteState.BLOCK;
 	}
 	
 	//is site (row i, column j) full?
