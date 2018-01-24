@@ -25,8 +25,8 @@ public class Percolation
 			}
 		}
 		
-		WeightedQuickUnionUF wQU = new WeightedQuickUnionUF(N);
-		QuickFindUF qf = new QuickFindUF(N);
+		//WeightedQuickUnionUF wQU = new WeightedQuickUnionUF(N);
+		//QuickFindUF qf = new QuickFindUF(N);
 		//wQU.union(p, q);
 		//wQU.connected(p, q);
 	}
