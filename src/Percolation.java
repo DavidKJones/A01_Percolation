@@ -9,10 +9,13 @@ public class Percolation
 	private SiteState[][] sitesState;
 	private int rowLength = 0;
 	private WeightedQuickUnionUF wQU;
+	private int N;
 	
 	//create N-by-N grid, with all sites blocked
 	public Percolation(int N)
 	{
+		if (N <= 0) throw new IllegalArgumentException("Grid size " + N + " must be greater than 0");
+		
 		sites = new int[N][N];
 		sitesState = new SiteState[N][N];
 		rowLength = N;
@@ -62,12 +65,16 @@ public class Percolation
 	//is site (row i, column j) open?
 	public boolean isOpen(int i, int j)
 	{
+		if (i < 0 || i >= N) throw new IndexOutOfBoundsException("row index " + i + " must be between 0 and " + (N-1));
+		if (j < 0 || j >= N) throw new IndexOutOfBoundsException("row index " + j + " must be between 0 and " + (N-1));
 		return sitesState[i][j] != SiteState.BLOCK;
 	}
 	
 	//is site (row i, column j) full?
 	public boolean isFull(int i, int j)
 	{
+		if (i < 0 || i >= N) throw new IndexOutOfBoundsException("row index " + i + " must be between 0 and " + (N-1));
+		if (j < 0 || j >= N) throw new IndexOutOfBoundsException("row index " + j + " must be between 0 and " + (N-1));
 		return sitesState[i][j] == SiteState.FULL;
 	}
 	
@@ -80,7 +87,10 @@ public class Percolation
 	//get the unique id for the site
 	private int get2Dto1D(int i, int j)
 	{
-		return 0;
+		int oneD = 0;
+		oneD = (i * N) + j;
+		return oneD;
+
 	}
 	
 	//checks to see if the indices are valid
