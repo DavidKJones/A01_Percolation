@@ -3,7 +3,6 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation 
 {
-	private int[][] sites;
 	private boolean[][] siteIsOpen;
 	private int virtualTopSite;
 	private int virtualBttmSite;
@@ -16,7 +15,6 @@ public class Percolation
 	{
 		if (N <= 0) throw new IllegalArgumentException("Grid size " + N + " must be greater than 0");
 		
-		sites = new int[N][N];
 		siteIsOpen = new boolean[N][N];
 		wQU = new WeightedQuickUnionUF(N*N + 2);
 		
@@ -25,13 +23,11 @@ public class Percolation
 		rLength = N;
 		numOpenSites = 0;
 		
-		int count = 0;
 		for( int i = 0; i < N; i++)
 		{
 			for(int j = 0; j < N; j++)
 			{
-				int id = count;
-				sites[i][j] = id;
+				int id = get2Dto1D(i,j);
 				siteIsOpen[i][j] = false;
 				
 				if(i==0)
@@ -42,8 +38,6 @@ public class Percolation
 				{
 					wQU.union(virtualBttmSite, id);
 				}
-				
-				count++;
 			}
 		}
 	}
@@ -123,7 +117,7 @@ public class Percolation
 	private int get2Dto1D(int i, int j)
 	{
 		int oneD = 0;
-		oneD = (i * N) + j;
+		oneD = (i * rLength) + j;
 		return oneD;
 
 	}
