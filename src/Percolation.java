@@ -3,13 +3,13 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation 
 {
-	public enum SiteState { FULL, BLOCK, OPEN };
-	
 	private int[][] sites;
-	private SiteState[][] sitesState;
-	private int rowLength = 0;
+	private boolean[][] siteIsOpen;
+	private int virtualTopSite;
+	private int virtualBttmSite;
 	private WeightedQuickUnionUF wQU;
-	private int N;
+	private int rLength;
+	private int numOpenSites;
 	
 	//create N-by-N grid, with all sites blocked
 	public Percolation(int N)
@@ -17,71 +17,106 @@ public class Percolation
 		if (N <= 0) throw new IllegalArgumentException("Grid size " + N + " must be greater than 0");
 		
 		sites = new int[N][N];
-		sitesState = new SiteState[N][N];
-		rowLength = N;
+		siteIsOpen = new boolean[N][N];
+		wQU = new WeightedQuickUnionUF(N*N + 2);
 		
+		virtualTopSite = N*N;
+		virtualBttmSite = N*N + 1;
+		rLength = N;
+		numOpenSites = 0;
+		
+		int count = 0;
 		for( int i = 0; i < N; i++)
 		{
 			for(int j = 0; j < N; j++)
 			{
-				sites[i][j] = get2Dto1D(i,j);
-				sitesState[i][j] = SiteState.BLOCK;
+				int id = count;
+				sites[i][j] = id;
+				siteIsOpen[i][j] = false;
+				
+				if(i==0)
+				{
+					wQU.union(virtualTopSite, id);
+				}
+				else if( i == N-1 )
+				{
+					wQU.union(virtualBttmSite, id);
+				}
+				
+				count++;
 			}
 		}
-		
-		wQU = new WeightedQuickUnionUF(N);
 	}
 	
 	//open site (row i, column j) if it is not open already
 	public void open(int i, int j)
 	{
+		validateSite(i,j);
+		
 		if(!isOpen(i,j))
 		{
-			sitesState[i][j] = SiteState.OPEN;
 			
-			//check the site on the left
-			if(isOpen(i - 1, j))
+			//check the neighbor above
+			if(validNeighbor(i-1,j))
 			{
-				wQU.union(sites[i][j], sites[i-1][j]);
+				if(siteIsOpen[i-1][j])
+				{
+					wQU.union( get2Dto1D(i,j), get2Dto1D(i-1,j));
+				}
 			}
-			//check the site on the right
-			if(isOpen(i + 1, j))
+			
+			//check the neighbor below
+			if(validNeighbor(i+1,j))
 			{
-				wQU.union(sites[i][j], sites[i+1][j]);
+				if(siteIsOpen[i+1][j])
+				{
+					wQU.union( get2Dto1D(i,j), get2Dto1D(i+1,j));
+				}
 			}
-			//check the site above
-			if(isOpen(i, j - 1))
+			
+			//check the neighbor on the left
+			if(validNeighbor(i,j-1))
 			{
-				wQU.union(sites[i][j], sites[i][j-1]);
+				if(siteIsOpen[i][j-1])
+				{
+					wQU.union( get2Dto1D(i,j), get2Dto1D(i,j-1));
+				}
 			}
-			//check the site below
-			if(isOpen(i, j + 1))
+			
+			//check the neighbor on the right
+			if(validNeighbor(i,j+1))
 			{
-				wQU.union(sites[i][j], sites[i-1][j+1]);
+				if(siteIsOpen[i][j+1])
+				{
+					wQU.union( get2Dto1D(i,j), get2Dto1D(i,j+1));
+				}
 			}
+			
+			//set the site to open
+			siteIsOpen[i][j] = true;
+			
+			numOpenSites++;
 		}
 	}
 	
 	//is site (row i, column j) open?
 	public boolean isOpen(int i, int j)
 	{
-		if (i < 0 || i >= N) throw new IndexOutOfBoundsException("row index " + i + " must be between 0 and " + (N-1));
-		if (j < 0 || j >= N) throw new IndexOutOfBoundsException("row index " + j + " must be between 0 and " + (N-1));
-		return sitesState[i][j] != SiteState.BLOCK;
+		validateSite(i,j);
+		return siteIsOpen[i][j] == true;
 	}
 	
 	//is site (row i, column j) full?
 	public boolean isFull(int i, int j)
 	{
-		if (i < 0 || i >= N) throw new IndexOutOfBoundsException("row index " + i + " must be between 0 and " + (N-1));
-		if (j < 0 || j >= N) throw new IndexOutOfBoundsException("row index " + j + " must be between 0 and " + (N-1));
-		return sitesState[i][j] == SiteState.FULL;
+		validateSite(i,j);
+		return wQU.connected(get2Dto1D(i,j), virtualTopSite)  && isOpen(i,j);
 	}
 	
 	//does the system percolate?
 	public boolean percolates()
 	{
-		return false;
+		return wQU.connected( virtualBttmSite, virtualTopSite);
 	}
 	
 	//get the unique id for the site
@@ -94,20 +129,33 @@ public class Percolation
 	}
 	
 	//checks to see if the indices are valid
-	private void validateSite(int i, int j)
+	private void validateSite(int i, int j) throws IndexOutOfBoundsException
 	{
-		if(i < 0 || i >= rowLength)
+		if(i < 0 || i >= rLength)
 		{
-			throw new IndexOutOfBoundsException("");
+			throw new IndexOutOfBoundsException("I");
+		}
+		
+		if(j < 0 || j >= rLength)
+		{
+			throw new IndexOutOfBoundsException("J");
 		}
 	}
 	
-	public int numberOfOpenSites()
+	//check to see if the neighbor is within the 2d array
+	private boolean validNeighbor( int i, int j)
 	{
-		return 0;
+		if(i < 0 || i >= rLength || j < 0 || j>= rLength)
+		{
+			return false;
+		}
+		
+		return true;
 	}
 	
-	public static void main (String[] args)
+	//Get the number of sites that are open
+	public int numberOfOpenSites()
 	{
+		return numOpenSites;
 	}
 }
