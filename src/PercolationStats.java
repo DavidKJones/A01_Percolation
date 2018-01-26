@@ -18,10 +18,11 @@ public class PercolationStats {
 		this.T = T;
 		
 		Percolation percGrid = new Percolation(N);
+		percThresholds = new double[T];
 		
 		int testCount = 0;
 		int openCount = 0;
-		while(testCount <= T)
+		while(testCount < T)
 		{
 			while(percGrid.percolates() == false)
 			{
@@ -34,11 +35,11 @@ public class PercolationStats {
 					openCount++;
 				} 
 			}
-			testCount++;
+			
 			double percThreshold = openCount / Math.pow(N, 2);
 			percThresholds[testCount] = percThreshold;
+			testCount++;
 		}
-		
 	}
 	
 	

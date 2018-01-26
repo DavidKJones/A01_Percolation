@@ -152,4 +152,28 @@ public class Percolation
 	{
 		return numOpenSites;
 	}
+	
+	public static void main(String[] args)
+	{
+		PercolationStats stats = new PercolationStats(200, 100);
+		System.out.println("\nPercolationStats (200, 100)");
+		System.out.println("mean() = " + stats.mean());
+		System.out.println("stddev() = " + stats.stddev());
+		System.out.println("confidenceLow() = " + stats.confidenceLow());
+		System.out.println("confidenceHigh() = " + stats.confidenceHigh());
+		
+		stats = new PercolationStats(200, 100);
+		System.out.println("\nPercolationStats (200, 100)");
+		System.out.println("mean() = " + stats.mean());
+		System.out.println("stddev() = " + stats.stddev());
+		System.out.println("confidenceLow() = " + stats.confidenceLow());
+		System.out.println("confidenceHigh() = " + stats.confidenceHigh());
+		
+		stats = new PercolationStats(2, 100000);
+		System.out.println("\nPercolationStats (2, 100000)");
+		System.out.println("mean() = " + stats.mean());
+		System.out.println("stddev() = " + stats.stddev());
+		System.out.println("confidenceLow() = " + stats.confidenceLow());
+		System.out.println("confidenceHigh() = " + stats.confidenceHigh());
+	}
 }
