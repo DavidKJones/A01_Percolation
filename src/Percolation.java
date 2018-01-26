@@ -8,6 +8,7 @@ public class Percolation
 	private int[][] sites;
 	private SiteState[][] sitesState;
 	private int rowLength = 0;
+	private WeightedQuickUnionUF wQU;
 	
 	//create N-by-N grid, with all sites blocked
 	public Percolation(int N)
@@ -25,25 +26,43 @@ public class Percolation
 			}
 		}
 		
-		//WeightedQuickUnionUF wQU = new WeightedQuickUnionUF(N);
-		//QuickFindUF qf = new QuickFindUF(N);
-		//wQU.union(p, q);
-		//wQU.connected(p, q);
+		wQU = new WeightedQuickUnionUF(N);
 	}
 	
 	//open site (row i, column j) if it is not open already
 	public void open(int i, int j)
 	{
-		if(sitesState[i][j] == SiteState.BLOCK)
+		if(!isOpen(i,j))
 		{
-			//check neighbors if they are open
+			sitesState[i][j] = SiteState.OPEN;
+			
+			//check the site on the left
+			if(isOpen(i - 1, j))
+			{
+				wQU.union(sites[i][j], sites[i-1][j]);
+			}
+			//check the site on the right
+			if(isOpen(i + 1, j))
+			{
+				wQU.union(sites[i][j], sites[i+1][j]);
+			}
+			//check the site above
+			if(isOpen(i, j - 1))
+			{
+				wQU.union(sites[i][j], sites[i][j-1]);
+			}
+			//check the site below
+			if(isOpen(i, j + 1))
+			{
+				wQU.union(sites[i][j], sites[i-1][j+1]);
+			}
 		}
 	}
 	
 	//is site (row i, column j) open?
 	public boolean isOpen(int i, int j)
 	{
-		return sitesState[i][j] == SiteState.BLOCK;
+		return sitesState[i][j] != SiteState.BLOCK;
 	}
 	
 	//is site (row i, column j) full?
@@ -76,5 +95,9 @@ public class Percolation
 	public int numberOfOpenSites()
 	{
 		return 0;
+	}
+	
+	public static void main (String[] args)
+	{
 	}
 }
