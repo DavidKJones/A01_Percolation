@@ -1,14 +1,14 @@
-import edu.princeton.cs.algs4.QuickFindUF;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation 
 {
-	private boolean[][] siteIsOpen;
+	private boolean[][] siteIsOpen; 
 	private int virtualTopSite;
 	private int virtualBttmSite;
 	private WeightedQuickUnionUF wQU;
 	private int rLength;
 	private int numOpenSites;
+	private boolean bottomSiteFull;
 	
 	//create N-by-N grid, with all sites blocked
 	public Percolation(int N)
@@ -20,6 +20,7 @@ public class Percolation
 		
 		virtualTopSite = N*N;
 		virtualBttmSite = N*N + 1;
+		bottomSiteFull = false;
 		rLength = N;
 		numOpenSites = 0;
 		
@@ -34,10 +35,6 @@ public class Percolation
 				{
 					wQU.union(virtualTopSite, id);
 				}
-				else if( i == N-1 )
-				{
-					wQU.union(virtualBttmSite, id);
-				}
 			}
 		}
 	}
@@ -48,7 +45,9 @@ public class Percolation
 		validateSite(i,j);
 		
 		if(!isOpen(i,j))
-		{
+		{			
+			//set the site to open
+			siteIsOpen[i][j] = true;
 			
 			//check the neighbor above
 			if(validNeighbor(i-1,j))
@@ -56,15 +55,6 @@ public class Percolation
 				if(siteIsOpen[i-1][j])
 				{
 					wQU.union( get2Dto1D(i,j), get2Dto1D(i-1,j));
-				}
-			}
-			
-			//check the neighbor below
-			if(validNeighbor(i+1,j))
-			{
-				if(siteIsOpen[i+1][j])
-				{
-					wQU.union( get2Dto1D(i,j), get2Dto1D(i+1,j));
 				}
 			}
 			
@@ -86,8 +76,21 @@ public class Percolation
 				}
 			}
 			
-			//set the site to open
-			siteIsOpen[i][j] = true;
+			//check the neighbor below
+			if(validNeighbor(i+1,j))
+			{
+				if(siteIsOpen[i+1][j])
+				{
+					wQU.union( get2Dto1D(i,j), get2Dto1D(i+1,j));
+				}
+			}
+			
+			//check to see if the bottom site is full
+			if(i == rLength - 1 && !bottomSiteFull)
+			{
+				wQU.union( get2Dto1D(i,j), virtualBttmSite);
+				bottomSiteFull = true;
+			}
 			
 			numOpenSites++;
 		}
@@ -153,6 +156,7 @@ public class Percolation
 		return numOpenSites;
 	}
 	
+	//main function for testing
 	public static void main(String[] args)
 	{
 		PercolationStats stats = new PercolationStats(200, 100);
