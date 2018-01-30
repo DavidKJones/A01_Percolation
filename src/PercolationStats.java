@@ -6,14 +6,19 @@ import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
+import percolation.Percolation;
+import percolation.PercolationStats;
 
 public class PercolationStats {
 	
 	int N;
 	int T;
 	double[] percThresholds;
-	
-	
+	private double percMean;
+	private double stddev;
+	private double confidenceLow;
+	private double confidenceHigh;
+		
 	//perform T independent experiments on an N-by-N grid
 	public PercolationStats(int N, int T)
 	{
@@ -48,10 +53,10 @@ public class PercolationStats {
 			percThresholds[testCount] = percThreshold;  //thresholds for all tests up to this point
 			testCount++;
 		}
-//		mean();
-//		stddev();
-//		confidenceLow();
-//		confidenceHigh();
+		percMean = mean();
+		stddev = stddev();
+		confidenceLow = confidenceLow();
+		confidenceHigh = confidenceHigh();
 		
 	}
 		
@@ -87,10 +92,10 @@ public class PercolationStats {
 	{
 		PercolationStats stats = new PercolationStats(200, 100);
 		System.out.println("\nPercolationStats (200, 100)");
-		System.out.println("mean() = " + stats.mean());
-		System.out.println("stddev() = " + stats.stddev());
-		System.out.println("confidenceLow() = " + stats.confidenceLow());
-		System.out.println("confidenceHigh() = " + stats.confidenceHigh());
+		System.out.println("mean = " + stats.percMean);
+		System.out.println("stddev = " + stats.stddev);
+		System.out.println("confidenceLow = " + stats.confidenceLow);
+		System.out.println("confidenceHigh = " + stats.confidenceHigh);
 
 		stats = new PercolationStats(200, 100);
 		System.out.println("\nPercolationStats (200, 100)");
@@ -109,4 +114,3 @@ public class PercolationStats {
 		}
 	
 	}
-
