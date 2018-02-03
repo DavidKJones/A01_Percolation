@@ -6,9 +6,9 @@ public class Percolation
 	private int virtualTopSite;
 	private int virtualBttmSite;
 	private WeightedQuickUnionUF wQU;
+	private WeightedQuickUnionUF wQU2;
 	private int rLength;
 	private int numOpenSites;
-	private boolean bottomSiteFull;
 	
 	//create N-by-N grid, with all sites blocked
 	public Percolation(int N)
@@ -16,11 +16,13 @@ public class Percolation
 		if (N <= 0) throw new IllegalArgumentException("Grid size " + N + " must be greater than 0");
 		
 		siteIsOpen = new boolean[N][N];
+		//quick union where we check for percolation
 		wQU = new WeightedQuickUnionUF(N*N + 2);
+		//quick union where we check for isFull
+		wQU2 = new WeightedQuickUnionUF(N*N + 1);
 		
 		virtualTopSite = N*N;
 		virtualBttmSite = N*N + 1;
-		bottomSiteFull = false;
 		rLength = N;
 		numOpenSites = 0;
 		
@@ -34,6 +36,12 @@ public class Percolation
 				if(i==0)
 				{
 					wQU.union(virtualTopSite, id);
+					wQU2.union(virtualTopSite, id);
+				}
+				
+				if(i == rLength - 1)
+				{
+					wQU.union(virtualBttmSite, id);
 				}
 			}
 		}
@@ -55,6 +63,7 @@ public class Percolation
 				if(siteIsOpen[i-1][j])
 				{
 					wQU.union( get2Dto1D(i,j), get2Dto1D(i-1,j));
+					wQU2.union( get2Dto1D(i,j), get2Dto1D(i-1,j));
 				}
 			}
 			
@@ -64,6 +73,7 @@ public class Percolation
 				if(siteIsOpen[i][j-1])
 				{
 					wQU.union( get2Dto1D(i,j), get2Dto1D(i,j-1));
+					wQU2.union( get2Dto1D(i,j), get2Dto1D(i,j-1));
 				}
 			}
 			
@@ -73,6 +83,7 @@ public class Percolation
 				if(siteIsOpen[i][j+1])
 				{
 					wQU.union( get2Dto1D(i,j), get2Dto1D(i,j+1));
+					wQU2.union( get2Dto1D(i,j), get2Dto1D(i,j+1));
 				}
 			}
 			
@@ -82,14 +93,8 @@ public class Percolation
 				if(siteIsOpen[i+1][j])
 				{
 					wQU.union( get2Dto1D(i,j), get2Dto1D(i+1,j));
+					wQU2.union( get2Dto1D(i,j), get2Dto1D(i+1,j));
 				}
-			}
-			
-			//check to see if the bottom site is full
-			if(i == rLength - 1 && !bottomSiteFull)
-			{
-				wQU.union( get2Dto1D(i,j), virtualBttmSite);
-				bottomSiteFull = true;
 			}
 			
 			numOpenSites++;
@@ -107,7 +112,7 @@ public class Percolation
 	public boolean isFull(int i, int j)
 	{
 		validateSite(i,j);
-		return wQU.connected(get2Dto1D(i,j), virtualTopSite)  && isOpen(i,j);
+		return wQU2.connected(get2Dto1D(i,j), virtualTopSite)  && isOpen(i,j);
 	}
 	
 	//does the system percolate?
