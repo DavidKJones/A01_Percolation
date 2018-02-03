@@ -1,5 +1,11 @@
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
+/**
+ * Percolation class
+ * @author David Jones and Lisa Hammond
+ * A01_Percolation
+ */
+
 public class Percolation 
 {
 	private boolean[][] siteIsOpen; 

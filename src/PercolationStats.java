@@ -1,13 +1,14 @@
-
-import java.util.Arrays;
-
-import edu.princeton.cs.algs4.StdIn;
-import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
-import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
-public class PercolationStats {
+/**
+ * PercolationStats class
+ * @author David Jones and Lisa Hammond
+ * A01_Percolation
+ */
+
+public class PercolationStats 
+{
 	
 	int N;
 	int T;
